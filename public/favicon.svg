@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#171816"/>
+  <circle cx="11" cy="16" r="3.5" fill="#ff634d"/>
+  <text x="17" y="21" font-family="'DM Mono', monospace, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#eeece5">B</text>
+</svg>
