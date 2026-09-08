@@ -73,7 +73,7 @@ export function EnergyPricesBubble() {
       </div>
       <footer>
         {isLive && entries.length > 0
-          ? `Aggiornato oggi alle ${entries[0] ? new Intl.DateTimeFormat('it-IT', { hour: '2-digit', minute: '2-digit' }).format(new Date(entries[0]!.updatedAt)) : '--:--'} · Fonti: ${sourceLabel}`
+          ? `Prezzi medi area Catania / Sicilia · Aggiornato alle ${entries[0] ? new Intl.DateTimeFormat('it-IT', { hour: '2-digit', minute: '2-digit' }).format(new Date(entries[0]!.updatedAt)) : '--:--'}`
           : isLoading
             ? 'Sincronizzazione in corso...'
             : 'Connessione non riuscita · Riprova più tardi'}

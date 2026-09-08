@@ -49,7 +49,7 @@ export function NowPlayingBubble() {
   const liveTrack = feed.kind === 'connected' ? feed.track : null
   const lastTrack = feed.kind === 'idle' ? feed.lastTrack : null
   const t = liveTrack ?? lastTrack
-  const showCoverImg = liveTrack !== null && liveTrack.coverUrl.length > 0
+  const showCoverImg = t !== null && t.coverUrl.length > 0
 
   return (
     <Bubble
@@ -66,11 +66,11 @@ export function NowPlayingBubble() {
           {showCoverImg ? (
             <div className="np-cover">
               <img
-                src={liveTrack!.coverUrl}
-                alt={`Copertina di ${liveTrack!.album || liveTrack!.title}`}
+                src={t!.coverUrl}
+                alt={`Copertina di ${t!.album || t!.title}`}
                 className="np-cover-img"
               />
-              <LiveDot />
+              {liveTrack ? <LiveDot /> : null}
             </div>
           ) : (
             <div className="np-cover" aria-hidden="true">

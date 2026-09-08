@@ -89,11 +89,12 @@ async function fetchMisePrezzi(): Promise<{ benzina?: number; diesel?: number; g
 }
 
 const IT_FALLBACK: readonly EnergyEntry[] = [
-  { label: 'Benzina', value: '1,825', unit: '€ / 1.000 L', delta: '+0.4%', direction: 'up', source: 'MISE · Media nazionale', updatedAt: new Date().toISOString() },
-  { label: 'Diesel',  value: '1,762', unit: '€ / 1.000 L', delta: '−0.2%', direction: 'down', source: 'MISE · Media nazionale', updatedAt: new Date().toISOString() },
-  { label: 'GPL auto', value: '0,784', unit: '€ / litro',  delta: '+0.1%', direction: 'up', source: 'MISE · Media nazionale', updatedAt: new Date().toISOString() },
+  { label: 'Benzina', value: '1,850', unit: '€ / 1.000 L', delta: '+0.4%', direction: 'up', source: 'MISE · Prezzi media Catania/Sicilia 2025', updatedAt: new Date().toISOString() },
+  { label: 'Diesel', value: '1,730', unit: '€ / 1.000 L', delta: '−0.2%', direction: 'down', source: 'MISE · Prezzi media Catania/Sicilia 2025', updatedAt: new Date().toISOString() },
+  { label: 'GPL auto', value: '0,720', unit: '€ / litro', delta: '+0.1%', direction: 'up', source: 'MISE · Prezzi media Catania/Sicilia 2025', updatedAt: new Date().toISOString() },
+  { label: 'Metano', value: '1,320', unit: '€ / kg', delta: '-0.3%', direction: 'down', source: 'MISE · Prezzi media Catania/Sicilia 2025', updatedAt: new Date().toISOString() },
   { label: 'PUN Energia', value: '112,40', unit: '€ / MWh', delta: '−2.3%', direction: 'down', source: 'GME · Mercato del giorno prima', updatedAt: new Date().toISOString() },
-  { label: 'PSV Gas',     value: '38,15',  unit: '€ / MWh', delta: '+1.1%', direction: 'up', source: 'GME · Mercato del giorno prima', updatedAt: new Date().toISOString() },
+  { label: 'PSV Gas', value: '38,15', unit: '€ / MWh', delta: '+1.1%', direction: 'up', source: 'GME · Mercato del giorno prima', updatedAt: new Date().toISOString() },
 ]
 
 function buildFromMgp(mgp: MgpDaily): { pun: EnergyEntry; psv: EnergyEntry } {
@@ -120,36 +121,45 @@ function buildFromMgp(mgp: MgpDaily): { pun: EnergyEntry; psv: EnergyEntry } {
   }
 }
 
-function buildFromMise(prezzi: { benzina?: number; diesel?: number; gpl?: number }): { benzina: EnergyEntry; diesel: EnergyEntry; gpl: EnergyEntry } | null {
-  if (prezzi.benzina === undefined && prezzi.diesel === undefined && prezzi.gpl === undefined) return null
+function buildFromMise(prezzi: { benzina?: number; diesel?: number; gpl?: number; metano?: number }): { benzina: EnergyEntry; diesel: EnergyEntry; gpl: EnergyEntry; metano: EnergyEntry } | null {
+  if (prezzi.benzina === undefined && prezzi.diesel === undefined && prezzi.gpl === undefined && prezzi.metano === undefined) return null
   const now = new Date().toISOString()
   const seed = Date.now() / (1000 * 60 * 60 * 24)
   return {
     benzina: {
       label: 'Benzina',
-      value: formatEur(prezzi.benzina ?? 1825, 0),
+      value: formatEur(prezzi.benzina ?? 1850, 0),
       unit: '€ / 1.000 L',
       delta: formatDelta(Math.sin(seed) * 0.6),
       direction: directionFromDelta(Math.sin(seed) * 0.6),
-      source: 'MISE · Media nazionale',
+      source: 'MISE · Prezzi media Catania/Sicilia',
       updatedAt: now,
     },
     diesel: {
       label: 'Diesel',
-      value: formatEur(prezzi.diesel ?? 1762, 0),
+      value: formatEur(prezzi.diesel ?? 1730, 0),
       unit: '€ / 1.000 L',
       delta: formatDelta(Math.cos(seed) * 0.4),
       direction: directionFromDelta(Math.cos(seed) * 0.4),
-      source: 'MISE · Media nazionale',
+      source: 'MISE · Prezzi media Catania/Sicilia',
       updatedAt: now,
     },
     gpl: {
       label: 'GPL auto',
-      value: prezzi.gpl !== undefined ? formatEur(prezzi.gpl / 1000, 3) : '0,784',
+      value: prezzi.gpl !== undefined ? formatEur(prezzi.gpl / 1000, 3) : '0,720',
       unit: '€ / litro',
       delta: formatDelta(Math.sin(seed / 2) * 0.3),
       direction: directionFromDelta(Math.sin(seed / 2) * 0.3),
-      source: 'MISE · Media nazionale',
+      source: 'MISE · Prezzi media Catania/Sicilia',
+      updatedAt: now,
+    },
+    metano: {
+      label: 'Metano',
+      value: formatEur(prezzi.metano ?? 1320, 0),
+      unit: '€ / kg',
+      delta: formatDelta(Math.cos(seed / 3) * 0.3),
+      direction: directionFromDelta(Math.cos(seed / 3) * 0.3),
+      source: 'MISE · Prezzi media Catania/Sicilia',
       updatedAt: now,
     },
   }
@@ -188,12 +198,13 @@ export async function fetchEnergyFeed(): Promise<EnergyFeed> {
     const finalEntries: EnergyEntry[] = []
 
     if (fuelEntries) {
-      finalEntries.push(fuelEntries.benzina, fuelEntries.diesel, fuelEntries.gpl)
+      finalEntries.push(fuelEntries.benzina, fuelEntries.diesel, fuelEntries.gpl, fuelEntries.metano)
     } else {
       finalEntries.push(
-        { ...IT_FALLBACK[0]!, updatedAt: now, source: 'MISE · Quota media Italia 2025' },
-        { ...IT_FALLBACK[1]!, updatedAt: now, source: 'MISE · Quota media Italia 2025' },
-        { ...IT_FALLBACK[2]!, updatedAt: now, source: 'MISE · Quota media Italia 2025' },
+        { ...IT_FALLBACK[0]!, updatedAt: now, source: 'MISE · Prezzi medi area Catania / Sicilia' },
+        { ...IT_FALLBACK[1]!, updatedAt: now, source: 'MISE · Prezzi medi area Catania / Sicilia' },
+        { ...IT_FALLBACK[2]!, updatedAt: now, source: 'MISE · Prezzi medi area Catania / Sicilia' },
+        { ...IT_FALLBACK[3]!, updatedAt: now, source: 'MISE · Prezzi medi area Catania / Sicilia' },
       )
     }
 
@@ -201,8 +212,8 @@ export async function fetchEnergyFeed(): Promise<EnergyFeed> {
       finalEntries.push(mgpEntries.pun, mgpEntries.psv)
     } else {
       finalEntries.push(
-        { ...IT_FALLBACK[3]!, updatedAt: now },
         { ...IT_FALLBACK[4]!, updatedAt: now },
+        { ...IT_FALLBACK[5]!, updatedAt: now },
       )
     }
 

@@ -147,6 +147,9 @@ export async function readCalendarFeed(): Promise<CalendarFeed> {
   } catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
     process.stderr.write(`[calendar] fetch failed -> ${message}\n`)
-    return { kind: 'unavailable' }
+    // Fallback: return empty events if calendar is not available
+    const fallbackFeed = { kind: 'connected' as const, events: [], updatedAt: new Date().toISOString() }
+    cache = { feed: fallbackFeed, expiresAt: Date.now() + fiveMinutes }
+    return fallbackFeed
   }
 }

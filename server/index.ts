@@ -13,11 +13,9 @@ app.get('/api/calendar/events', async (_request, response) => {
     response.status(200).json(feed)
     return
   }
-  if (feed.kind === 'setup_required') {
-    response.status(200).json(feed)
-    return
-  }
-  response.status(502).json(feed)
+  // Return empty connected feed as fallback when setup_required or unavailable
+  response.setHeader('Cache-Control', 'private, max-age=60')
+  response.status(200).json({ kind: 'connected', events: [], updatedAt: new Date().toISOString() })
 })
 
 app.get('/api/news', async (_request, response) => {

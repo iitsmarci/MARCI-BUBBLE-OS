@@ -42,7 +42,22 @@ function pickBestImage(images: readonly LastfmImage[] | undefined): string {
     if (found && found['#text']) return found['#text']
   }
   const fallback = images.find((img) => img['#text'])
-  return fallback ? fallback['#text'] : ''
+  return fallback && fallback['#text'] ? fallback['#text'] : ''
+}
+
+function generatePlaceholderSvg(artist: string, album: string): string {
+  const safeArtist = encodeURIComponent(artist.slice(0, 20))
+  const safeAlbum = encodeURIComponent(album.slice(0, 20))
+  const bg = '1a1a2e'
+  const accent = '00d4aa'
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <rect fill="#${bg}" width="300" height="300"/>
+    <circle cx="150" cy="120" r="50" fill="none" stroke="#${accent}" stroke-width="3"/>
+    <rect x="100" y="185" width="100" height="4" rx="2" fill="#${accent}"/>
+    <text x="150" y="240" font-family="system-ui, sans-serif" font-size="14" fill="#${accent}" text-anchor="middle" opacity="0.7">${safeArtist}</text>
+    <text x="150" y="260" font-family="system-ui, sans-serif" font-size="12" fill="#${accent}" text-anchor="middle" opacity="0.5">${safeAlbum}</text>
+  </svg>`
+  return `data:image/svg+xml;base64,${btoa(svg)}`
 }
 
 function readEnv(): { username: string; apiKey: string } | undefined {
@@ -71,11 +86,15 @@ async function fetchRecentTracks(): Promise<LastfmResponse> {
 
 function extractTrack(track: LastfmTrack): NowPlayingTrack {
   const isNowPlaying = track['@attr']?.nowplaying === 'true'
+  const coverUrl = pickBestImage(track.image) || generatePlaceholderSvg(
+    track.artist?.['#text'] ?? 'Unknown',
+    track.album?.['#text'] ?? 'Unknown Album',
+  )
   return {
     title: track.name ?? 'Unknown',
     artist: track.artist?.['#text'] ?? 'Unknown artist',
     album: track.album?.['#text'] ?? '',
-    coverUrl: pickBestImage(track.image),
+    coverUrl,
     isNowPlaying,
     playedAt: track.date?.uts ? new Date(parseInt(track.date.uts, 10) * 1000).toISOString() : null,
     url: track.url ?? 'https://www.last.fm/user/' + (import.meta.env.VITE_LASTFM_USERNAME ?? ''),
