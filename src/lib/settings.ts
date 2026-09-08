@@ -7,7 +7,7 @@ export type CityPreset = {
 }
 
 export const CITY_PRESETS: CityPreset[] = [
-  { city: 'CATANIA', name: 'Catania, Italy', lat: 37.5079, lon: 15.0873, timeZone: 'Europe/Rome' },
+  { city: 'CATANIA', name: 'Catania, Italy', lat: 37.5025, lon: 15.0873, timeZone: 'Europe/Rome' },
   { city: 'ROMA', name: 'Rome, Italy', lat: 41.9028, lon: 12.4964, timeZone: 'Europe/Rome' },
   { city: 'MILANO', name: 'Milan, Italy', lat: 45.4642, lon: 9.19, timeZone: 'Europe/Rome' },
   { city: 'LISBONA', name: 'Lisbon, Portugal', lat: 38.7223, lon: -9.1393, timeZone: 'Europe/Lisbon' },

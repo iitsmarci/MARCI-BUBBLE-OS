@@ -6,16 +6,16 @@
 
 # Test info
 
-- Name: dashboard.spec.ts >> Marci Bubble Dashboard >> renders the dashboard with all 6 instrument bubbles and zero console errors
-- Location: tests\dashboard.spec.ts:4:3
+- Name: dashboard.spec.ts >> Marci Bubble Dashboard >> renders navigable news articles with valid external links
+- Location: tests\dashboard.spec.ts:78:3
 
 # Error details
 
 ```
-Error: expect(received).toContain(expected) // indexOf
+Error: expect(received).toBeGreaterThanOrEqual(expected)
 
-Expected value: "MARKETS"
-Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
+Expected: >= 1
+Received:    0
 ```
 
 # Page snapshot
@@ -74,7 +74,7 @@ Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
       - generic [ref=e85]:
         - heading "Local time" [level=2] [ref=e86]
         - generic [ref=e87]: Europe/Rome
-      - time [ref=e88]: 15:10:54
+      - time [ref=e88]: 15:11:16
       - paragraph [ref=e89]: Tuesday, 8 September
       - generic [ref=e91]: Catania, Italy · Real time
     - region "Personal" [ref=e92]:
@@ -97,20 +97,17 @@ Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
           - time [ref=e112]: 18:00
           - generic [ref=e113]:
             - heading "Riepilogo & Organizzazione Attività" [level=3] [ref=e114]
-            - paragraph [ref=e115]: In 02h 49m · Agenda Locale
+            - paragraph [ref=e115]: In 02h 48m · Agenda Locale
       - generic [ref=e116]: Agenda locale · 3 impegni del giorno
     - region "Now Playing" [ref=e117]:
       - generic [ref=e119]:
         - heading "Now Playing" [level=2] [ref=e120]
         - generic [ref=e121]: IDLE
-      - generic [ref=e123]:
-        - img "Copertina di DIO LO SA" [ref=e126]
-        - generic [ref=e127]:
-          - generic [ref=e128]: ULTIMO ASCOLTO
-          - generic [ref=e130]: UNA VITA FA (feat. Shiva)
-          - generic [ref=e131]: Geolier
-          - generic [ref=e132]: DIO LO SA
-          - generic [ref=e133]: Ascoltato 10m fa · Last.fm
+      - generic [ref=e128]:
+        - generic [ref=e129]: SILENZIO
+        - generic [ref=e131]: Nessun brano in riproduzione
+        - generic [ref=e132]: Nessuna sessione audio attiva
+        - generic [ref=e133]: Caricamento in corso...
   - generic [ref=e134]:
     - generic [ref=e135]: MARCI BUBBLE
     - generic [ref=e137]: Designed to be quiet when nothing happens.
@@ -141,8 +138,7 @@ Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
   19  |     const titles = (await page.locator('.bubble h2').allTextContents()).map((t) => t.toUpperCase())
   20  |     expect(titles).toContain('WEATHER')
   21  |     expect(titles).toContain('LOCAL TIME')
-> 22  |     expect(titles).toContain('MARKETS')
-      |                    ^ Error: expect(received).toContain(expected) // indexOf
+  22  |     expect(titles).toContain('MARKETS')
   23  |     expect(titles).toContain('NEWS')
   24  |     expect(titles).toContain('PERSONAL')
   25  |     expect(titles).toContain('TRAVEL')
@@ -203,7 +199,8 @@ Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
   80  | 
   81  |     const newsLinks = page.locator('.news-row')
   82  |     const count = await newsLinks.count()
-  83  |     expect(count).toBeGreaterThanOrEqual(1)
+> 83  |     expect(count).toBeGreaterThanOrEqual(1)
+      |                   ^ Error: expect(received).toBeGreaterThanOrEqual(expected)
   84  | 
   85  |     const firstHref = await newsLinks.first().getAttribute('href')
   86  |     expect(firstHref).toMatch(/^https?:\/\//)

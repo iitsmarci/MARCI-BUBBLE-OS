@@ -75,12 +75,19 @@ export function SettingsDrawer({
         </section>
 
         <section className="drawer-section">
-          <h3>APPLE CALENDAR BRIDGE</h3>
+          <h3>AGENDA CALENDARIO</h3>
           <div className="drawer-info-box">
             <p>
-              <strong>Status:</strong> CalDAV Bridge on <code>127.0.0.1:4317</code>
+              <strong>Status:</strong>{' '}
+              {typeof import.meta !== 'undefined' && import.meta.env?.VITE_CALENDAR_ICAL_URL
+                ? 'Feed iCal configurato'
+                : 'Agenda Locale attiva'}
             </p>
-            <p>Credentials remain strictly on your computer in <code>.env</code>.</p>
+            <p>
+              {typeof import.meta !== 'undefined' && import.meta.env?.VITE_CALENDAR_ICAL_URL
+                ? 'Sincronizzazione eventi attiva da feed remoto.'
+                : 'Funzionamento autonomo senza dipendenza da server locali.'}
+            </p>
           </div>
         </section>
 

@@ -12,7 +12,7 @@ export type WeatherData = {
 
 const DEFAULT_COORDS = {
   city: 'CATANIA',
-  lat: 37.5079,
+  lat: 37.5025,
   lon: 15.0873,
 }
 
@@ -27,17 +27,20 @@ let pendingWeatherFetch: Promise<WeatherData> | null = null
 const CACHE_DURATION_MS = 5 * 60 * 1000 // 5 minutes
 
 export function getWeatherConditionDescription(code: number): string {
-  if (code === 0) return 'Clear sky'
-  if (code === 1) return 'Mainly clear'
-  if (code === 2) return 'Partly cloudy'
-  if (code === 3) return 'Overcast'
-  if (code === 45 || code === 48) return 'Fog'
-  if (code >= 51 && code <= 57) return 'Drizzle'
-  if (code >= 61 && code <= 67) return 'Rain'
-  if (code >= 71 && code <= 77) return 'Snow'
-  if (code >= 80 && code <= 82) return 'Rain showers'
-  if (code >= 95 && code <= 99) return 'Thunderstorm'
-  return 'Clear'
+  if (code === 0) return 'Sereno'
+  if (code === 1) return 'Prevalentemente sereno'
+  if (code === 2) return 'Parzialmente nuvoloso'
+  if (code === 3) return 'Coperto'
+  if (code === 45 || code === 48) return 'Nebbia'
+  if (code >= 51 && code <= 55) return 'Pioggerella'
+  if (code >= 56 && code <= 57) return 'Pioggerella gelata'
+  if (code >= 61 && code <= 65) return 'Pioggia'
+  if (code === 66 || code === 67) return 'Pioggia gelata'
+  if (code >= 71 && code <= 77) return 'Neve'
+  if (code >= 80 && code <= 82) return 'Rovesci di pioggia'
+  if (code === 85 || code === 86) return 'Rovesci di neve'
+  if (code >= 95 && code <= 99) return 'Temporale'
+  return 'Sereno'
 }
 
 export async function fetchLiveWeather(
@@ -56,7 +59,11 @@ export async function fetchLiveWeather(
 
   pendingWeatherFetch = (async () => {
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`
+      const isCatania = !coords || coords.city.toUpperCase() === 'CATANIA'
+      const lat = isCatania ? 37.5025 : coords.lat
+      const lon = isCatania ? 15.0873 : coords.lon
+      const tz = isCatania ? 'Europe%2FRome' : 'auto'
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=${tz}&_t=${Date.now()}`
 
       const response = await fetch(url, { signal })
       if (!response.ok) {
@@ -65,15 +72,21 @@ export async function fetchLiveWeather(
 
       const json = await response.json()
       const current = json.current
-      const daily = json.daily
+      if (!current) {
+        throw new Error('Weather payload missing current measurements')
+      }
 
       const temperature = Math.round(current.temperature_2m)
-      const feelsLike = Math.round(current.apparent_temperature)
+      const feelsLike = current.apparent_temperature !== undefined ? Math.round(current.apparent_temperature) : temperature
       const humidity = Math.round(current.relative_humidity_2m)
       const windSpeed = Math.round(current.wind_speed_10m)
       const weatherCode = current.weather_code
-      const high = Math.round(daily?.temperature_2m_max?.[0] ?? temperature)
-      const low = Math.round(daily?.temperature_2m_min?.[0] ?? temperature)
+      const high = json.daily?.temperature_2m_max?.[0] !== undefined
+        ? Math.round(json.daily.temperature_2m_max[0])
+        : Math.round(temperature + 2)
+      const low = json.daily?.temperature_2m_min?.[0] !== undefined
+        ? Math.round(json.daily.temperature_2m_min[0])
+        : Math.max(0, Math.round(temperature - 4))
       const condition = getWeatherConditionDescription(weatherCode)
 
       const result: WeatherData = {
@@ -101,7 +114,7 @@ export async function fetchLiveWeather(
         city: coords.city,
         temperature: 28,
         feelsLike: 29,
-        condition: 'Clear sky',
+        condition: 'Sereno',
         weatherCode: 0,
         humidity: 47,
         windSpeed: 12,

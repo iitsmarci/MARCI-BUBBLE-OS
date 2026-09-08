@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Calendar, MapPin, Clock } from 'lucide-react'
 import { Bubble } from './Bubble'
-import { getAppleCalendarFeed, type AppleCalendarFeed } from '../lib/api/calendar'
+import { getAppleCalendarFeed, getLocalAgendaEvents, type AppleCalendarFeed } from '../lib/api/calendar'
 
 export function CalendarBubble() {
-  const [feed, setFeed] = useState<AppleCalendarFeed>({ kind: 'unavailable' })
-  const [isLoading, setIsLoading] = useState(true)
+  const [feed, setFeed] = useState<AppleCalendarFeed>(() => ({
+    kind: 'local',
+    events: getLocalAgendaEvents(),
+    updatedAt: new Date().toISOString(),
+  }))
+  const [isLoading, setIsLoading] = useState(false)
 
   const load = useCallback(async () => {
     setIsLoading(true)
@@ -20,17 +23,11 @@ export function CalendarBubble() {
     return () => window.clearInterval(id)
   }, [load])
 
-  const today = new Date().toISOString().split('T')[0]
-
-  const localEvents = [
-    { id: 'today', title: 'Oggi', start: today + 'T00:00:00', end: today + 'T23:59:59', allDay: true, calendar: 'Locale' },
-  ]
-
-  const events = feed.kind === 'connected' ? feed.events : localEvents
+  const events = feed.events
   const hasEvents = events.length > 0
 
   const statusLabel = (() => {
-    if (isLoading) return 'SYNCING'
+    if (isLoading && !hasEvents) return 'SYNCING'
     if (feed.kind === 'connected') return 'LIVE'
     return 'LOCAL'
   })()
@@ -68,7 +65,9 @@ export function CalendarBubble() {
                 <div className="calendar-details">
                   <b>{event.title}</b>
                   <span className="calendar-time">
-                    {isAllDay ? 'Tutto il giorno' : `${startDate.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} – ${new Date(event.end).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`}
+                    {isAllDay
+                      ? 'Tutto il giorno'
+                      : `${startDate.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} – ${new Date(event.end).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`}
                   </span>
                   <span className="calendar-source">{event.calendar}</span>
                 </div>
@@ -80,7 +79,7 @@ export function CalendarBubble() {
       <footer>
         {feed.kind === 'connected'
           ? `Agenda sincronizzata · ${events.length} eventi`
-          : 'Agenda locale · Eventi di oggi'}
+          : `Agenda locale · ${events.length} impegni del giorno`}
       </footer>
     </Bubble>
   )

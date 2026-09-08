@@ -6,115 +6,82 @@
 
 # Test info
 
-- Name: dashboard.spec.ts >> Marci Bubble Dashboard >> renders the dashboard with all 6 instrument bubbles and zero console errors
-- Location: tests\dashboard.spec.ts:4:3
+- Name: dashboard.spec.ts >> Marci Bubble Dashboard >> expands and collapses travel destination details
+- Location: tests\dashboard.spec.ts:61:3
 
 # Error details
 
 ```
-Error: expect(received).toContain(expected) // indexOf
+Error: expect(locator).toHaveText(expected) failed
 
-Expected value: "MARKETS"
-Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
+Locator: locator('.travel-action')
+Expected pattern: /Plan a trip/i
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toHaveText" with timeout 5000ms
+  - waiting for locator('.travel-action')
+
 ```
 
-# Page snapshot
-
 ```yaml
-- main [ref=e3]:
-  - generic [ref=e4]:
-    - link "Marci Bubble dashboard" [ref=e5] [cursor=pointer]:
-      - /url: "#dashboard"
-      - text: MARCI BUBBLE
-    - generic [ref=e7]:
-      - generic [ref=e8]: TUESDAY
-      - generic [ref=e9]: •8 SEPTEMBER 2026
-    - navigation "Azioni dashboard" [ref=e10]:
-      - button "Stato connessione dati dashboard" [ref=e11] [cursor=pointer]: DATA / LIVE
-      - 'button "Cambia tema, attuale: dark" [ref=e13] [cursor=pointer]':
-        - generic [ref=e14]: "Theme: Dark"
-      - button "Apri impostazioni" [ref=e15] [cursor=pointer]
-  - navigation "Navigazione viste dashboard" [ref=e17]:
-    - 'button "Vista: Overview" [pressed] [ref=e18] [cursor=pointer]':
-      - generic [ref=e24]: Overview
-    - 'button "Vista: Editorial" [ref=e25] [cursor=pointer]':
-      - generic [ref=e28]: Editorial
-    - 'button "Vista: Finance" [ref=e29] [cursor=pointer]':
-      - generic [ref=e33]: Finance
-    - 'button "Vista: Mobility" [ref=e34] [cursor=pointer]':
-      - generic [ref=e38]: Mobility
-    - 'button "Vista: Focus & Notes" [ref=e39] [cursor=pointer]':
-      - generic [ref=e42]: Focus & Notes
-  - generic [ref=e43]:
-    - paragraph [ref=e44]: PERSONAL INFORMATION INSTRUMENT
-    - heading [level=1] [ref=e45]:
-      - text: Good afternoon,
-      - emphasis [ref=e46]: Marci.
-    - generic [ref=e47]: 08.09.2026 · Catania, Italy
-  - generic [ref=e48]:
-    - region "Weather" [ref=e49]:
-      - generic [ref=e51]:
-        - heading "Weather" [level=2] [ref=e52]
-        - generic [ref=e53]: OPEN-METEO
-      - generic [ref=e56]:
-        - paragraph [ref=e57]: CATANIA
-        - paragraph [ref=e58]: 28°
-        - paragraph [ref=e59]: Sereno · percepiti 29°
-      - generic [ref=e66]:
-        - generic [ref=e67]:
-          - text: HIGH
-          - generic [ref=e68]: 31°
-        - generic [ref=e69]:
-          - text: LOW
-          - generic [ref=e70]: 23°
-        - generic [ref=e71]: 47%
-        - generic [ref=e76]: 12 km/h
-      - generic [ref=e82]: Open-Meteo · Live weather for catania
-    - region "Local time" [ref=e83]:
-      - generic [ref=e85]:
-        - heading "Local time" [level=2] [ref=e86]
-        - generic [ref=e87]: Europe/Rome
-      - time [ref=e88]: 15:10:54
-      - paragraph [ref=e89]: Tuesday, 8 September
-      - generic [ref=e91]: Catania, Italy · Real time
-    - region "Personal" [ref=e92]:
-      - generic [ref=e94]:
-        - heading "Personal" [level=2] [ref=e95]
-        - generic [ref=e96]: LOCAL
-      - paragraph [ref=e98]: OGGI IN AGENDA
-      - generic [ref=e99]:
-        - article [ref=e100]:
-          - time [ref=e101]: 09:30
-          - generic [ref=e102]:
-            - heading "Pianificazione & Focus Strategico" [level=3] [ref=e103]
-            - paragraph [ref=e104]: Today · Agenda Locale
-        - article [ref=e106]:
-          - time [ref=e107]: 14:30
-          - generic [ref=e108]:
-            - heading "Revisione Progetti & Dashboard Release" [level=3] [ref=e109]
-            - paragraph [ref=e110]: Today · Agenda Locale
-        - article [ref=e111]:
-          - time [ref=e112]: 18:00
-          - generic [ref=e113]:
-            - heading "Riepilogo & Organizzazione Attività" [level=3] [ref=e114]
-            - paragraph [ref=e115]: In 02h 49m · Agenda Locale
-      - generic [ref=e116]: Agenda locale · 3 impegni del giorno
-    - region "Now Playing" [ref=e117]:
-      - generic [ref=e119]:
-        - heading "Now Playing" [level=2] [ref=e120]
-        - generic [ref=e121]: IDLE
-      - generic [ref=e123]:
-        - img "Copertina di DIO LO SA" [ref=e126]
-        - generic [ref=e127]:
-          - generic [ref=e128]: ULTIMO ASCOLTO
-          - generic [ref=e130]: UNA VITA FA (feat. Shiva)
-          - generic [ref=e131]: Geolier
-          - generic [ref=e132]: DIO LO SA
-          - generic [ref=e133]: Ascoltato 10m fa · Last.fm
-  - generic [ref=e134]:
-    - generic [ref=e135]: MARCI BUBBLE
-    - generic [ref=e137]: Designed to be quiet when nothing happens.
-    - generic [ref=e138]: V1 · LIVE FEEDS
+- main:
+  - link "Marci Bubble dashboard":
+    - /url: "#dashboard"
+    - text: MARCI BUBBLE
+  - text: TUESDAY •8 SEPTEMBER 2026
+  - navigation "Azioni dashboard":
+    - button "Stato connessione dati dashboard": DATA / LIVE
+    - 'button "Cambia tema, attuale: dark"': "Theme: Dark"
+    - button "Apri impostazioni"
+  - navigation "Navigazione viste dashboard":
+    - 'button "Vista: Overview" [pressed]': Overview
+    - 'button "Vista: Editorial"': Editorial
+    - 'button "Vista: Finance"': Finance
+    - 'button "Vista: Mobility"': Mobility
+    - 'button "Vista: Focus & Notes"': Focus & Notes
+  - paragraph: PERSONAL INFORMATION INSTRUMENT
+  - heading "Good afternoon, Marci." [level=1]:
+    - text: Good afternoon,
+    - emphasis: Marci.
+  - text: 08.09.2026 · Catania, Italy
+  - region "Weather":
+    - heading "Weather" [level=2]
+    - text: OPEN-METEO
+    - paragraph: CATANIA
+    - paragraph: 28°
+    - paragraph: Sereno · percepiti 29°
+    - text: HIGH 31° LOW 23° 47% 12 km/h Open-Meteo · Live weather for catania
+  - region "Local time":
+    - heading "Local time" [level=2]
+    - text: Europe/Rome
+    - time: 15:11:11
+    - paragraph: Tuesday, 8 September
+    - text: Catania, Italy · Real time
+  - region "Personal":
+    - heading "Personal" [level=2]
+    - text: LOCAL
+    - paragraph: OGGI IN AGENDA
+    - article:
+      - time: 09:30
+      - heading "Pianificazione & Focus Strategico" [level=3]
+      - paragraph: Today · Agenda Locale
+    - article:
+      - time: 14:30
+      - heading "Revisione Progetti & Dashboard Release" [level=3]
+      - paragraph: Today · Agenda Locale
+    - article:
+      - time: 18:00
+      - heading "Riepilogo & Organizzazione Attività" [level=3]
+      - paragraph: In 02h 48m · Agenda Locale
+    - text: Agenda locale · 3 impegni del giorno
+  - region "Now Playing":
+    - heading "Now Playing" [level=2]
+    - text: IDLE
+    - img "Copertina di DIO LO SA"
+    - text: ULTIMO ASCOLTO UNA VITA FA (feat. Shiva) Geolier DIO LO SA Ascoltato 10m fa · Last.fm
+  - text: MARCI BUBBLE Designed to be quiet when nothing happens. V1 · LIVE FEEDS
 ```
 
 # Test source
@@ -141,8 +108,7 @@ Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
   19  |     const titles = (await page.locator('.bubble h2').allTextContents()).map((t) => t.toUpperCase())
   20  |     expect(titles).toContain('WEATHER')
   21  |     expect(titles).toContain('LOCAL TIME')
-> 22  |     expect(titles).toContain('MARKETS')
-      |                    ^ Error: expect(received).toContain(expected) // indexOf
+  22  |     expect(titles).toContain('MARKETS')
   23  |     expect(titles).toContain('NEWS')
   24  |     expect(titles).toContain('PERSONAL')
   25  |     expect(titles).toContain('TRAVEL')
@@ -185,7 +151,8 @@ Received array: ["WEATHER", "LOCAL TIME", "PERSONAL", "NOW PLAYING"]
   62  |     await page.goto('/')
   63  | 
   64  |     const travelAction = page.locator('.travel-action')
-  65  |     await expect(travelAction).toHaveText(/Plan a trip/i)
+> 65  |     await expect(travelAction).toHaveText(/Plan a trip/i)
+      |                                ^ Error: expect(locator).toHaveText(expected) failed
   66  | 
   67  |     // Click to expand
   68  |     await travelAction.click()

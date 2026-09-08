@@ -23,7 +23,8 @@ function WeatherIcon({ code }: { code: number }) {
   if (code >= 51 && code <= 57) return <CloudDrizzle className="weather-icon" size={68} strokeWidth={1.2} />
   if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82))
     return <CloudRain className="weather-icon" size={68} strokeWidth={1.2} />
-  if (code >= 71 && code <= 77) return <CloudSnow className="weather-icon" size={68} strokeWidth={1.2} />
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86)
+    return <CloudSnow className="weather-icon" size={68} strokeWidth={1.2} />
   if (code >= 95) return <CloudLightning className="weather-icon" size={68} strokeWidth={1.2} />
   return <CloudSun className="weather-icon" size={68} strokeWidth={1.2} />
 }
@@ -36,7 +37,7 @@ export function WeatherBubble({ cityPreset }: WeatherBubbleProps) {
   const activeCity = cityPreset ?? {
     city: 'CATANIA',
     name: 'Catania, Italy',
-    lat: 37.5079,
+    lat: 37.5025,
     lon: 15.0873,
     timeZone: 'Europe/Rome',
   }
@@ -50,7 +51,7 @@ export function WeatherBubble({ cityPreset }: WeatherBubbleProps) {
       city: activeCity.city,
       temperature: 28,
       feelsLike: 29,
-      condition: 'Clear sky',
+      condition: 'Sereno',
       weatherCode: 0,
       humidity: 47,
       windSpeed: 12,
@@ -63,7 +64,7 @@ export function WeatherBubble({ cityPreset }: WeatherBubbleProps) {
     city: activeCity.city,
     temperature: 28,
     feelsLike: 29,
-    condition: 'Clear sky',
+    condition: 'Sereno',
     weatherCode: 0,
     humidity: 47,
     windSpeed: 12,
@@ -86,7 +87,7 @@ export function WeatherBubble({ cityPreset }: WeatherBubbleProps) {
           <p className="weather-place">{current.city}</p>
           <p className="weather-temp">{current.temperature}°</p>
           <p className="weather-condition">
-            {current.condition} · feels like {current.feelsLike}°
+            {current.condition} · percepiti {current.feelsLike}°
           </p>
         </div>
         <WeatherIcon code={current.weatherCode} />
