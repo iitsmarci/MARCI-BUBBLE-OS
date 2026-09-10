@@ -8,6 +8,7 @@ export type CalendarEvent = {
   end: string
   allDay: boolean
   calendar: string
+  location?: string
 }
 
 export type CalendarFeed =
@@ -28,16 +29,16 @@ function nonEmptyEnvironmentValue(value: string | undefined): string | undefined
 }
 
 function readCredentials(): CalendarCredentials | undefined {
-  const username = nonEmptyEnvironmentValue(process.env.ICLOUD_USERNAME)
-  const password = nonEmptyEnvironmentValue(process.env.ICLOUD_APP_PASSWORD)
+  const username = nonEmptyEnvironmentValue(process.env.VITE_APPLE_USER) ?? nonEmptyEnvironmentValue(process.env.ICLOUD_USERNAME)
+  const password = nonEmptyEnvironmentValue(process.env.VITE_APPLE_APP_PASSWORD) ?? nonEmptyEnvironmentValue(process.env.ICLOUD_APP_PASSWORD)
   const timeZone = nonEmptyEnvironmentValue(process.env.CALENDAR_TIMEZONE) ?? 'Europe/Rome'
   if (username === undefined || password === undefined) {
     process.stderr.write(
-      `[calendar] env check: ICLOUD_USERNAME=${username === undefined ? 'MISSING' : 'ok'} ICLOUD_APP_PASSWORD=${password === undefined ? 'MISSING' : 'ok'} CALENDAR_TIMEZONE=${timeZone}\n`,
+      `[calendar] env check: USERNAME=${username === undefined ? 'MISSING' : 'ok'} PASSWORD=${password === undefined ? 'MISSING' : 'ok'} CALENDAR_TIMEZONE=${timeZone}\n`,
     )
     return undefined
   }
-  process.stderr.write(`[calendar] env check: ICLOUD_USERNAME=ok ICLOUD_APP_PASSWORD=ok CALENDAR_TIMEZONE=${timeZone}\n`)
+  process.stderr.write(`[calendar] env check: USERNAME=ok PASSWORD=ok CALENDAR_TIMEZONE=${timeZone}\n`)
   return { username, password, timeZone }
 }
 
@@ -58,11 +59,20 @@ function parseCalendarObject({ object, calendar }: { object: DAVCalendarObject; 
   const root = ICAL.Component.fromString(object.data)
   return root.getAllSubcomponents('vevent').flatMap((component) => {
     const event = new ICAL.Event(component)
-    const title = event.summary.trim()
+    const title = event.summary?.trim() || 'Evento'
     const startDate = event.startDate.toJSDate()
     const endDate = event.endDate.toJSDate()
+    const location = typeof event.location === 'string' && event.location.trim().length > 0 ? event.location.trim() : undefined
     if (title.length === 0 || Number.isNaN(startDate.valueOf()) || Number.isNaN(endDate.valueOf())) return []
-    return [{ id: event.uid, title, start: startDate.toISOString(), end: endDate.toISOString(), allDay: event.startDate.isDate, calendar }]
+    return [{
+      id: event.uid,
+      title,
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      allDay: event.startDate.isDate,
+      calendar,
+      location,
+    }]
   })
 }
 

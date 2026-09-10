@@ -936,6 +936,50 @@ h1 em {
   margin-bottom: 2px;
 }
 
+.calendar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 16px;
+  gap: 6px;
+}
+
+.calendar-empty .empty-icon {
+  color: var(--muted);
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.calendar-empty-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+}
+
+.calendar-empty-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+.calendar-meta-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.calendar-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+
 .energy-skeleton {
   display: flex;
   flex-direction: column;
