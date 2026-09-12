@@ -1,5 +1,51 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build output
 dist/
+build/
+coverage/
+out/
+
+# Environment files (keep private!)
 .env
+.env.local
+.env.*.local
+.env.*
+!.env.example
+
+# Logs and runtime files
+*.log
+*.log.*
+server.log
+server.err
 *.tsbuildinfo
+*.prof
+*.prof.gz
+.server/
+.cache/
+.npm/
+
+# Test output
+test-results/
+playwright-report/
+
+# Editor & OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# AI helper files
 .aider*
+
+# Secrets and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials/
+config/secrets/

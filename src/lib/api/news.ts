@@ -61,7 +61,7 @@ function toClientItems(items: readonly ServerNewsItem[]): readonly NewsItem[] {
     headline: i.headline,
     source: i.source,
     published: i.published,
-    url: i.url,
+    url: sanitizeUrl(i.url),
   }))
 }
 
@@ -96,6 +96,10 @@ export type NewsFeed = {
 }
 
 async function fetchRssFeed(rssUrl: string, timeoutMs: number, signal?: AbortSignal): Promise<ServerNewsItem[]> {
+  if (!isValidHttpsUrl(rssUrl)) {
+    throw new Error('Invalid RSS URL')
+  }
+
   const proxyUrl = `${CORS_PROXY_BASE}${encodeURIComponent(rssUrl)}`
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
@@ -160,11 +164,11 @@ function parseRssXml(xmlText: string, sourceName: string): ServerNewsItem[] {
   const itemRe = /<item[\s\S]*?<\/item>/gi
   for (const m of xmlText.matchAll(itemRe)) {
     const block = m[0]
-    const title = extractXmlTag(block, 'title')
-    const link = extractXmlTag(block, 'link') || extractXmlTag(block, 'guid')
-    const pubDate = extractXmlTag(block, 'pubDate')
+    const title = sanitizeString(extractXmlTag(block, 'title'))
+    const link = sanitizeString(extractXmlTag(block, 'link')) || sanitizeString(extractXmlTag(block, 'guid'))
+    const pubDate = sanitizeString(extractXmlTag(block, 'pubDate'))
     if (!title || !link) continue
-    const cat = extractXmlTag(block, 'category') || 'ITALIA'
+    const cat = sanitizeString(extractXmlTag(block, 'category')) || 'ITALIA'
     const parsedPub = pubDate ? new Date(pubDate) : null
     items.push({
       category: cat.toUpperCase().slice(0, 12) || 'ITALIA',
@@ -172,7 +176,7 @@ function parseRssXml(xmlText: string, sourceName: string): ServerNewsItem[] {
       source: sourceName,
       published: formatTimeAgo(pubDate),
       publishedAt: parsedPub && !Number.isNaN(parsedPub.getTime()) ? parsedPub.toISOString() : new Date().toISOString(),
-      url: link,
+      url: sanitizeUrl(link),
     })
     if (items.length >= 4) break
   }
@@ -196,6 +200,31 @@ function decodeXmlEntities(text: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
     .trim()
+}
+
+function sanitizeString(str: string): string {
+  return str.replace(/<[^>]*>/g, '').trim()
+}
+
+function isValidHttpsUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:'
+  } catch {
+    return false
+  }
+}
+
+function sanitizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return 'https://www.ansa.it'
+    }
+    return parsed.toString().slice(0, 500)
+  } catch {
+    return 'https://www.ansa.it'
+  }
 }
 
 function formatTimeAgo(dateStr: string): string {

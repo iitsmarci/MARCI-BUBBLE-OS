@@ -1,6 +1,6 @@
 import type { PropsWithChildren, ReactNode } from 'react'
 
-type BubbleProps = PropsWithChildren<{
+export type BubbleProps = PropsWithChildren<{
   title: string
   className?: string
   meta?: ReactNode

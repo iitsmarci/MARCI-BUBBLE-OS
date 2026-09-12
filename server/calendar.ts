@@ -29,8 +29,9 @@ function nonEmptyEnvironmentValue(value: string | undefined): string | undefined
 }
 
 function readCredentials(): CalendarCredentials | undefined {
-  const username = nonEmptyEnvironmentValue(process.env.VITE_APPLE_USER) ?? nonEmptyEnvironmentValue(process.env.ICLOUD_USERNAME)
-  const password = nonEmptyEnvironmentValue(process.env.VITE_APPLE_APP_PASSWORD) ?? nonEmptyEnvironmentValue(process.env.ICLOUD_APP_PASSWORD)
+  // Server-side only: never use VITE_ prefix for secrets (Vite exposes VITE_ to client)
+  const username = nonEmptyEnvironmentValue(process.env.ICLOUD_USERNAME)
+  const password = nonEmptyEnvironmentValue(process.env.ICLOUD_APP_PASSWORD)
   const timeZone = nonEmptyEnvironmentValue(process.env.CALENDAR_TIMEZONE) ?? 'Europe/Rome'
   if (username === undefined || password === undefined) {
     process.stderr.write(

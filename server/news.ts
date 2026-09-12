@@ -43,6 +43,18 @@ function decodeEntities(text: string): string {
     .trim()
 }
 
+function sanitizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      return 'https://www.ansa.it'
+    }
+    return parsed.toString().slice(0, 500)
+  } catch {
+    return 'https://www.ansa.it'
+  }
+}
+
 function formatTimeAgo(dateStr: string): string {
   if (!dateStr) return '—'
   const pubDate = new Date(dateStr)
@@ -82,7 +94,7 @@ function parseRss(xmlText: string, defaultCategory: string, sourceName: string, 
       source: sourceName,
       published: formatTimeAgo(pubDate),
       publishedAt: parsedPub && !Number.isNaN(parsedPub.getTime()) ? parsedPub.toISOString() : new Date().toISOString(),
-      url: link,
+      url: sanitizeUrl(link),
     })
     if (items.length >= maxItems) break
   }

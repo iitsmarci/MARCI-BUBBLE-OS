@@ -11,6 +11,7 @@ import { PersonalBubble } from './components/PersonalBubble'
 import { QuickNotesBubble } from './components/QuickNotesBubble'
 import { SettingsDrawer } from './components/SettingsDrawer'
 import { TabBar, type TabId } from './components/TabBar'
+import { WasteBubble } from './components/WasteBubble'
 import { WeatherBubble } from './components/WeatherBubble'
 import { WazeCommuteBubble } from './components/WazeCommuteBubble'
 import { loadSavedCity, saveCity, type CityPreset } from './lib/settings'
@@ -78,6 +79,7 @@ export default function App() {
           <WeatherBubble cityPreset={currentCity} />
           <ClockBubble currentCity={currentCity} />
           <PersonalBubble />
+          <WasteBubble title="Raccolta Differenziata" />
           <NowPlayingBubble />
         </div>
       )}
